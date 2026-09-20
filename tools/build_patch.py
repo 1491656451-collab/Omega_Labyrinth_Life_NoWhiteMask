@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build the Omega Labyrinth Life illustration white-mask removal patch.
+"""构建 Omega Labyrinth Life 的插画白色遮罩去除补丁。
 
-This tool only handles the PC game's active illust.unity3d bundle. It never
-ships or downloads game assets; the user supplies their own installed copy.
+本工具仅处理 PC 版实际使用的 illust.unity3d。它不会分发或下载游戏资源，
+使用者须提供自己安装的游戏副本。
 """
 
 from __future__ import annotations
@@ -47,44 +47,44 @@ def verify_patched_bundle(path: Path) -> None:
     env = UnityPy.load(str(path))
     targets = target_textures(env)
     if len(targets) != EXPECTED_TEXTURES:
-        raise RuntimeError(f"expected {EXPECTED_TEXTURES} spa_*effB textures, found {len(targets)}")
+        raise RuntimeError(f"应有 {EXPECTED_TEXTURES} 张 spa_*effB 纹理，实际找到 {len(targets)} 张")
     for texture in targets:
         if (texture.m_Width, texture.m_Height) != (2048, 2048):
-            raise RuntimeError(f"unexpected dimensions for {texture.m_Name}: {texture.m_Width}x{texture.m_Height}")
+            raise RuntimeError(f"{texture.m_Name} 尺寸异常：{texture.m_Width}x{texture.m_Height}")
         if texture.image.convert("RGBA").getchannel("A").getextrema() != (0, 0):
-            raise RuntimeError(f"texture is not fully transparent: {texture.m_Name}")
+            raise RuntimeError(f"纹理并非完全透明：{texture.m_Name}")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build the Omega Labyrinth Life no-white-mask patch.")
-    parser.add_argument("game_root", type=Path, help="Omega Labyrinth Life installation directory")
+    parser = argparse.ArgumentParser(description="构建 Omega Labyrinth Life 去除白色遮罩补丁。")
+    parser.add_argument("game_root", type=Path, help="Omega Labyrinth Life 游戏安装目录")
     args = parser.parse_args()
 
     bundle = args.game_root / RELATIVE_BUNDLE
     backup = bundle.with_name(bundle.name + ".bak0000")
     if not bundle.is_file():
-        raise SystemExit(f"Missing game bundle: {bundle}")
+        raise SystemExit(f"找不到游戏 Bundle：{bundle}")
 
     current_hash = sha256(bundle)
     if current_hash == PATCHED_SHA256:
         verify_patched_bundle(bundle)
-        print("Patch is already installed and verified.")
+        print("补丁已安装，验证通过。")
         return 0
     if current_hash != ORIGINAL_SHA256:
         raise SystemExit(
-            "Unexpected illust.unity3d hash. No files were changed. "
-            "Verify game files in Steam, then run this tool again.\n"
-            f"Expected original: {ORIGINAL_SHA256}\nActual:            {current_hash}"
+            "illust.unity3d 的哈希不符合已知原版，未修改任何文件。"
+            "请在 Steam 验证游戏文件后重试。\n"
+            f"预期原版：{ORIGINAL_SHA256}\n实际哈希：{current_hash}"
         )
     if backup.exists():
-        raise SystemExit(f"Backup already exists: {backup}. No files were changed.")
+        raise SystemExit(f"备份已存在：{backup}。未修改任何文件。")
 
     shutil.copy2(bundle, backup)
     try:
         env = UnityPy.load(str(backup))
         textures = target_textures(env)
         if len(textures) != EXPECTED_TEXTURES:
-            raise RuntimeError(f"expected {EXPECTED_TEXTURES} spa_*effB textures, found {len(textures)}")
+            raise RuntimeError(f"应有 {EXPECTED_TEXTURES} 张 spa_*effB 纹理，实际找到 {len(textures)} 张")
         for texture in textures:
             transparent = Image.new("RGBA", (texture.m_Width, texture.m_Height), (0, 0, 0, 0))
             texture.set_image(transparent)
@@ -95,9 +95,9 @@ def main() -> int:
         shutil.move(backup, bundle)
         raise
 
-    print("Patch installed and verified.")
-    print(f"Backup: {backup}")
-    print(f"Patched textures: {EXPECTED_TEXTURES}")
+    print("补丁已安装并验证通过。")
+    print(f"备份：{backup}")
+    print(f"已处理纹理：{EXPECTED_TEXTURES} 张")
     return 0
 
 

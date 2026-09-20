@@ -1,15 +1,15 @@
-# Validation Record
+# 验证记录
 
-The original PC `illust.unity3d` bundle contained 34,409 Unity objects and 359 `Texture2D` objects.
+原版 PC `illust.unity3d` 包含 34,409 个 Unity 对象和 359 个 `Texture2D` 对象。
 
-The patch targets exactly 26 names: thirteen `spa_*_effB` textures and their thirteen `_PS4` counterparts. All targets are 2048x2048 DXT5 textures.
+补丁精确处理 26 个目标：13 张 `spa_*_effB` 纹理及 13 张对应的 `_PS4` 变体。所有目标均为 2048x2048 的 DXT5 纹理。
 
-After rebuilding, the output bundle retained 34,409 objects and 359 `Texture2D` objects. Each target was reloaded from the finished Bundle and verified to have an alpha-channel range of `(0, 0)`.
+重打包后，成品 Bundle 仍有 34,409 个对象和 359 个 `Texture2D` 对象。每个目标均从成品包重新加载，并确认 alpha 通道范围为 `(0, 0)`。
 
-The completed bundle SHA-256 was:
+成品 Bundle 的 SHA-256：
 
 ```text
 3e0c6c78a11d0719219c6106e4ffc7169635d783deb94f84b853048feea2795f
 ```
 
-The result was structurally verified. Runtime scene validation remains a separate check from this repository's static Bundle validation.
+结果已经过 Bundle 结构验证；实际游戏场景画面验证属于独立步骤，不能由本仓库的静态 Bundle 检查替代。
