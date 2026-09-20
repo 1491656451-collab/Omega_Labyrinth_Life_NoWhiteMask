@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.unity3d
+*.bak0000
+*.zip
+dist/
